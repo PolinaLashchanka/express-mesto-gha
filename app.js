@@ -1,33 +1,25 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const router = require('./routes');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
+mongoose
+  .connect('mongodb://127.0.0.1:27017/mestodb', {
+    useNewUrlParser: true,
+  })
+  .then((res) => console.log(res))
+  .catch((err) => console.log(err));
 
 app.use(express.json());
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '64839b5dc1bb79cb5d938288',
+//   };
 
-const users = [];
-let id = 0;
-
-app.get('/users', (req, res) => {
-  res.send(users);
-});
-
-app.post('/users', (req, res) => {
-  id += 1;
-  const newUser = {
-    id,
-    ...req.body,
-  };
-  users.push(newUser);
-
-  res.send(newUser);
-});
+//   next();
+// });
+app.use(router);
 
 app.listen(3000, () => {
   // eslint-disable-next-line no-console
