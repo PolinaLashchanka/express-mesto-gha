@@ -35,7 +35,7 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
-        res.status(400).send('Вы ввели некорректные данные');
+        res.status(400).send({ message: 'Вы ввели некорректные данные' });
       } else {
         res.status(500).send({
           message: 'Internal server error',
@@ -60,7 +60,7 @@ const updateUser = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.message.includes('Validation failed')) {
-        res.status(400).send('Вы ввели некорректные данные');
+        res.status(400).send({ message: 'Вы ввели некорректные данные' });
       } else {
         res.status(500).send({
           message: 'Internal server error',
@@ -83,7 +83,7 @@ const updateAvatar = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.message.includes('Cast to string failed for value')) {
-        res.status(400).send('Вы ввели некорректные данные');
+        res.status(400).send({ message: 'Вы ввели некорректные данные' });
       } else {
         res.status(500).send({
           message: 'Internal server error',
