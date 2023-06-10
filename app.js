@@ -17,5 +17,9 @@ app.use((req, res, next) => {
   next();
 });
 app.use(router);
+app.use((req, res) => {
+  res.status(404);
+  res.json({ message: 'Not found' });
+});
 
 app.listen(3000);

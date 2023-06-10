@@ -36,6 +36,8 @@ const deleteCard = (req, res) => {
         res.status(404).send({
           message: 'Запрашиваеая карточка не найдена',
         });
+      } else if (err.message.includes('Cast to ObjectId failed for value')) {
+        res.status(400).send({ message: 'Введен некорректный id карточки' });
       } else {
         res.status(500).send({
           message: 'Internal server error',
@@ -54,7 +56,7 @@ const likeCard = (req, res) => {
   )
     .then((card) => res.send(card.likes))
     .catch((err) => {
-      if (err.message.includes('Cannot read properties of nul')) {
+      if (err.message.includes('Cannot read properties of null')) {
         res.status(404).send({
           message: 'Запрашиваеая карточка не найдена',
         });
@@ -78,7 +80,7 @@ const dislikeCard = (req, res) => {
   )
     .then((card) => res.send(card.likes))
     .catch((err) => {
-      if (err.message.includes('Cannot read properties of nul')) {
+      if (err.message.includes('Cannot read properties of null')) {
         res.status(404).send({
           message: 'Запрашиваеая карточка не найдена',
         });
