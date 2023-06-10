@@ -30,7 +30,7 @@ const createCard = (req, res) => {
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => new Error('Not found'))
-    .then((card) => res.send(card))
+    .then((card) => res.send({ data: card}))
     .catch((err) => {
       if (err.message === 'Not found') {
         res.status(404).send({
@@ -54,11 +54,19 @@ const likeCard = (req, res) => {
   )
     .then((card) => res.send(card.likes))
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal server error',
-        err: err.massage,
-        stack: err.stack,
-      });
+      if (err.message.includes('Cannot read properties of nul')) {
+        res.status(404).send({
+          message: 'Запрашиваеая карточка не найдена',
+        });
+      } else if (err.message.includes('Cast to ObjectId failed for value')) {
+        res.status(400).send({ message: 'Введен некорректный id карточки' });
+      } else {
+        res.status(500).send({
+          message: 'Internal server error',
+          err: err.massage,
+          stack: err.stack,
+        });
+      }
     });
 };
 
@@ -70,11 +78,19 @@ const dislikeCard = (req, res) => {
   )
     .then((card) => res.send(card.likes))
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal server error',
-        err: err.massage,
-        stack: err.stack,
-      });
+      if (err.message.includes('Cannot read properties of nul')) {
+        res.status(404).send({
+          message: 'Запрашиваеая карточка не найдена',
+        });
+      } else if (err.message.includes('Cast to ObjectId failed for value')) {
+        res.status(400).send({ message: 'Введен некорректный id карточки' });
+      } else {
+        res.status(500).send({
+          message: 'Internal server error',
+          err: err.massage,
+          stack: err.stack,
+        });
+      }
     });
 };
 

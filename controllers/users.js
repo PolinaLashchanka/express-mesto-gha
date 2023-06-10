@@ -20,7 +20,7 @@ const getUserById = (req, res) => {
           message: 'Запрашиваемый пользователь не найден',
         });
       } else {
-        res.status(500).send({
+        res.status(400).send({
           message: 'Internal server error',
           err: err.massage,
           stack: err.stack,
