@@ -17,7 +17,7 @@ const getUserById = (req, res) => {
     .catch((err) => {
       if (err.message === 'Not found') {
         res.status(404).send({
-          message: 'User not found',
+          message: 'Запрашиваемый пользователь не найден',
         });
       } else {
         res.status(500).send({
@@ -33,11 +33,17 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send({ data: user }))
-    .catch((err) => res.status(500).send({
-      message: 'Internal server error',
-      err: err.massage,
-      stack: err.stack,
-    }));
+    .catch((err) => {
+      if (err.message.includes('validation failed')) {
+        res.status(400).send('Вы ввели некорректные данные');
+      } else {
+        res.status(500).send({
+          message: 'Internal server error',
+          err: err.massage,
+          stack: err.stack,
+        });
+      }
+    });
 };
 
 const updateUser = (req, res) => {
@@ -52,11 +58,40 @@ const updateUser = (req, res) => {
     },
   )
     .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({
-      message: 'Internal server error',
-      err: err.massage,
-      stack: err.stack,
-    }));
+    .catch((err) => {
+      if (err.message.includes('Validation failed')) {
+        res.status(400).send('Вы ввели некорректные данные');
+      } else {
+        res.status(500).send({
+          message: 'Internal server error',
+          err: err.massage,
+          stack: err.stack,
+        });
+      }
+    });
+};
+
+const updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+    {
+      new: true,
+    },
+  )
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.message.includes('Cast to string failed for value')) {
+        res.status(400).send('Вы ввели некорректные данные');
+      } else {
+        res.status(500).send({
+          message: 'Internal server error',
+          err: err.massage,
+          stack: err.stack,
+        });
+      }
+    });
 };
 
 module.exports = {
@@ -64,4 +99,5 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  updateAvatar,
 };
