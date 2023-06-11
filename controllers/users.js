@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const { NOT_FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR } = require('../utils/constants');
+
 
 const getUsers = (req, res) => {
   User.find({})
@@ -16,11 +18,11 @@ const getUserById = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.message === 'Not found') {
-        res.status(404).send({
+        res.status(NOT_FOUND).send({
           message: 'Запрашиваемый пользователь не найден',
         });
       } else {
-        res.status(400).send({
+        res.status(BAD_REQUEST).send({
           message: 'Internal server error',
           err: err.massage,
           stack: err.stack,
@@ -35,9 +37,9 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
-        res.status(400).send({ message: 'Вы ввели некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Вы ввели некорректные данные' });
       } else {
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Internal server error',
           err: err.massage,
           stack: err.stack,
@@ -60,9 +62,9 @@ const updateUser = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.message.includes('Validation failed')) {
-        res.status(400).send({ message: 'Вы ввели некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Вы ввели некорректные данные' });
       } else {
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Internal server error',
           err: err.massage,
           stack: err.stack,
@@ -83,9 +85,9 @@ const updateAvatar = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.message.includes('Cast to string failed for value')) {
-        res.status(400).send({ message: 'Вы ввели некорректные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Вы ввели некорректные данные' });
       } else {
-        res.status(500).send({
+        res.status(INTERNAL_SERVER_ERROR).send({
           message: 'Internal server error',
           err: err.massage,
           stack: err.stack,

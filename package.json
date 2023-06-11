@@ -9,7 +9,7 @@
     "lint": "npx eslint ."
   },
   "keywords": [],
-  "author": "",
+  "author": "Palina Lashchanka",
   "license": "ISC",
   "devDependencies": {
     "eslint-config-airbnb-base": "^15.0.0",
