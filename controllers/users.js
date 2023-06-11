@@ -1,14 +1,15 @@
 const User = require('../models/user');
-const { NOT_FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR } = require('../utils/constants');
-
+const {
+  NOT_FOUND,
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+} = require('../utils/constants');
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({
-      message: 'Internal server error',
-      err: err.massage,
-      stack: err.stack,
+    .catch(() => res.status(500).send({
+      message: 'На сервере произошла ошибка',
     }));
 };
 
@@ -21,11 +22,13 @@ const getUserById = (req, res) => {
         res.status(NOT_FOUND).send({
           message: 'Запрашиваемый пользователь не найден',
         });
-      } else {
+      } else if (err.name === 'CastError') {
         res.status(BAD_REQUEST).send({
-          message: 'Internal server error',
-          err: err.massage,
-          stack: err.stack,
+          message: 'Вы ввели некорректные данные',
+        });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({
+          message: 'На сервере произошла ошибка',
         });
       }
     });
@@ -37,12 +40,12 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.message.includes('validation failed')) {
-        res.status(BAD_REQUEST).send({ message: 'Вы ввели некорректные данные' });
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Вы ввели некорректные данные' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal server error',
-          err: err.massage,
-          stack: err.stack,
+          message: 'На сервере произошла ошибка',
         });
       }
     });
@@ -56,18 +59,17 @@ const updateUser = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message.includes('Validation failed')) {
-        res.status(BAD_REQUEST).send({ message: 'Вы ввели некорректные данные' });
+      if (err.name === 'ValidationError') {
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Вы ввели некорректные данные' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal server error',
-          err: err.massage,
-          stack: err.stack,
+          message: 'На сервере произошла ошибка',
         });
       }
     });
@@ -80,17 +82,18 @@ const updateAvatar = (req, res) => {
     { avatar },
     {
       new: true,
+      runValidators: true,
     },
   )
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message.includes('Cast to string failed for value')) {
-        res.status(BAD_REQUEST).send({ message: 'Вы ввели некорректные данные' });
+      if (err.name === 'alidationError') {
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Вы ввели некорректные данные' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'Internal server error',
-          err: err.massage,
-          stack: err.stack,
+          message: 'На сервере произошла ошибка',
         });
       }
     });

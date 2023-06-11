@@ -4,4 +4,4 @@ const INTERNAL_SERVER_ERROR = '500';
 
 module.exports = {
   NOT_FOUND, BAD_REQUEST, INTERNAL_SERVER_ERROR,
-}
+};
