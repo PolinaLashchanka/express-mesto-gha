@@ -8,7 +8,7 @@ const {
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(500).send({
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({
       message: 'На сервере произошла ошибка',
     }));
 };
@@ -87,7 +87,7 @@ const updateAvatar = (req, res) => {
   )
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'alidationError') {
+      if (err.name === 'ValidationError') {
         res
           .status(BAD_REQUEST)
           .send({ message: 'Вы ввели некорректные данные' });
