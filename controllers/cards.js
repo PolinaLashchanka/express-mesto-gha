@@ -31,9 +31,17 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .orFail(() => new Error('Not found'))
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (String(card.owner) === req.user._id) {
+        Card.findByIdAndRemove(req.params.cardId).then((usersCard) => {
+          res.send({ data: usersCard });
+        });
+      } else {
+        res.send({ message: 'Вы не можете удалить эту карточку' });
+      }
+    })
     .catch((err) => {
       if (err.message === 'Not found') {
         res.status(NOT_FOUND).send({
