@@ -20,6 +20,7 @@ const login = (req, res, next) => {
             httpOnly: true,
             sameSite: true,
           });
+          req.user = { _id: user._id };
           res.send({ data: user });
         } else {
           res.status(401).send({ message: 'Неверный email или пароль' });
@@ -136,6 +137,16 @@ const updateAvatar = (req, res) => {
     });
 };
 
+const getUserInfo = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 module.exports = {
   login,
   getUsers,
@@ -143,4 +154,5 @@ module.exports = {
   createUser,
   updateUser,
   updateAvatar,
+  getUserInfo,
 };
