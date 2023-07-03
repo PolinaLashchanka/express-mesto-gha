@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const router = require('./routes');
 
 const app = express();
@@ -16,6 +17,8 @@ app.use((req, res, next) => {
 
   next();
 });
+
+app.use(cookieParser());
 app.use(router);
 app.use((req, res) => {
   res.status(404);
