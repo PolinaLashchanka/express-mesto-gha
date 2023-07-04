@@ -39,7 +39,7 @@ const deleteCard = (req, res) => {
           res.send({ data: usersCard });
         });
       } else {
-        res.send({ message: 'Вы не можете удалить эту карточку' });
+        res.status(BAD_REQUEST).send({ message: 'Вы не можете удалить эту карточку' });
       }
     })
     .catch((err) => {
