@@ -9,7 +9,7 @@ const {
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .orFail(() => new Error('Пользователь не найден'))
     .then((user) => {
       bcrypt.compare(String(password), user.password).then((isValidUser) => {
@@ -21,7 +21,7 @@ const login = (req, res, next) => {
             sameSite: true,
           });
           req.user = { _id: user._id };
-          res.send({ data: user });
+          res.send({ data: user.deletePassword() });
         } else {
           res.status(401).send({ message: 'Неверный email или пароль' });
         }
