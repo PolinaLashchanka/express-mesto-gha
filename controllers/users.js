@@ -1,14 +1,16 @@
 const bcrypt = require('bcryptjs');
 const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  NOT_FOUND,
-  BAD_REQUEST,
-  INTERNAL_SERVER_ERROR,
-} = require('../utils/constants');
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(403).send({ message: 'Введите данные' });
+
+    return;
+  }
+
   User.findOne({ email }).select('+password')
     .orFail(() => new Error('Пользователь не найден'))
     .then((user) => {
@@ -20,43 +22,26 @@ const login = (req, res, next) => {
             httpOnly: true,
             sameSite: true,
           });
-          req.user = { _id: user._id };
           res.send({ data: user.deletePassword() });
         } else {
-          res.status(401).send({ message: 'Неверный email или пароль' });
+          res.status(403).send({ message: 'Неверный email или пароль' });
         }
       });
     })
     .catch(next);
 };
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({
-      message: 'На сервере произошла ошибка',
-    }));
+    .catch(next);
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => new Error('Not found'))
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.message === 'Not found') {
-        res.status(NOT_FOUND).send({
-          message: 'Запрашиваемый пользователь не найден',
-        });
-      } else if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({
-          message: 'Вы ввели некорректные данные',
-        });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'На сервере произошла ошибка',
-        });
-      }
-    });
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -74,22 +59,12 @@ const createUser = (req, res, next) => {
         password: hashPassword,
       })
         .then((user) => res.status(201).send({ data: user }))
-        .catch((err) => {
-          if (err.message.includes('validation failed')) {
-            res
-              .status(BAD_REQUEST)
-              .send({ message: 'Вы ввели некорректные данные' });
-          } else {
-            res.status(INTERNAL_SERVER_ERROR).send({
-              message: 'На сервере произошла ошибка',
-            });
-          }
-        });
+        .catch(next);
     })
     .catch(next);
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -100,20 +75,10 @@ const updateUser = (req, res) => {
     },
   )
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Вы ввели некорректные данные' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'На сервере произошла ошибка',
-        });
-      }
-    });
+    .catch(next);
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -124,27 +89,15 @@ const updateAvatar = (req, res) => {
     },
   )
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Вы ввели некорректные данные' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({
-          message: 'На сервере произошла ошибка',
-        });
-      }
-    });
+    .catch(next);
 };
 
-const getUserInfo = (req, res) => {
+const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch(next);
 };
 
 module.exports = {

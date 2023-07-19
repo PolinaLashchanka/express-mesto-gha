@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const router = require('./routes');
+const errorHandler = require('./middlewares/error');
 
 const app = express();
 
@@ -13,6 +14,8 @@ app.use(express.json());
 
 app.use(cookieParser());
 app.use(router);
+app.use(errorHandler);
+
 app.use((req, res) => {
   res.status(404);
   res.json({ message: 'Not found' });
