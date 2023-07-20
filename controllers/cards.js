@@ -24,7 +24,7 @@ const deleteCard = (req, res, next) => {
         });
       } else {
         res
-          .status(BAD_REQUEST)
+          .status(403)
           .send({ message: 'Вы не можете удалить эту карточку' });
       }
     })
