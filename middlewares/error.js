@@ -4,6 +4,7 @@ const {
   BAD_REQUEST,
   INTERNAL_SERVER_ERROR,
   DUPLICATE_KEY_ERROR,
+  ACCESS_ERROR,
 } = require('../utils/constants');
 
 class BadRequestError extends Error {
@@ -33,8 +34,16 @@ class ServerError extends Error {
 class DuplicateKeyError extends Error {
   constructor(err) {
     super(err);
-    this.message = 'такой Email уже зарегистрирован';
+    this.message = 'Такой Email уже зарегистрирован';
     this.statusCode = DUPLICATE_KEY_ERROR;
+  }
+}
+
+class AccessError extends Error {
+  constructor(err) {
+    super(err);
+    this.message = 'Пользователь не авторизован';
+    this.statusCode = ACCESS_ERROR;
   }
 }
 
@@ -47,6 +56,8 @@ const errorHandler = (err, req, res, next) => {
     error = new DataNotFound(err);
   } else if (err.code === 11000) {
     error = new DuplicateKeyError(err);
+  } else if (err.name === 'JsonWebTokenError' || err.message === 'User not found') {
+    error = new AccessError(err);
   } else {
     error = new ServerError(err);
   }

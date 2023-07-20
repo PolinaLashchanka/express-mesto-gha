@@ -12,7 +12,7 @@ const login = (req, res, next) => {
   }
 
   User.findOne({ email }).select('+password')
-    .orFail(() => new Error('Пользователь не найден'))
+    .orFail(() => new Error('User not found'))
     .then((user) => {
       bcrypt.compare(String(password), user.password).then((isValidUser) => {
         if (isValidUser) {

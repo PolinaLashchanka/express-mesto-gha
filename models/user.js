@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    validate: {
+      validator: (v) => /https?:\/\/(www.)?[a-z0-9\W_]+#?/i.test(v),
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
   email: {
@@ -29,6 +33,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// eslint-disable-next-line func-names
 userSchema.methods.deletePassword = function () {
   const user = this.toObject();
   delete user.password;
