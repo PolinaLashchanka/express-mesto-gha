@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -17,14 +19,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => /https?:\/\/(www.)?[a-z0-9\W_]+#?/i.test(v),
-      message: (props) => `${props.value} is not a valid phone number!`,
+      message: (props) => `${props.value} is not a valid URL!`,
     },
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    default:
+      'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator: (v) => validator.isEmail(v),
+      message: (props) => `${props.value} is not a valid email!`,
+    },
   },
   password: {
     type: String,
