@@ -1,5 +1,4 @@
 const Card = require('../models/card');
-const { BAD_REQUEST } = require('../utils/constants');
 
 const getCards = (req, res, next) => {
   Card.find({})
