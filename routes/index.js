@@ -12,8 +12,6 @@ router.post(
     body: Joi.object().keys({
       email: Joi.string()
         .required()
-        .min(2)
-        .max(30)
         .regex(
           /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/i,
         ),
@@ -28,8 +26,6 @@ router.post(
     body: Joi.object().keys({
       email: Joi.string()
         .required()
-        .min(2)
-        .max(30)
         .regex(
           /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/i,
         ),

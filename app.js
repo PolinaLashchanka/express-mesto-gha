@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { errors } = require('celebrate');
 const router = require('./routes');
-const errorHandler = require('./middlewares/error');
+const { errorHandler } = require('./middlewares/error');
 
 const app = express();
 
@@ -17,11 +17,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(router);
 app.use(errors());
-app.use(errorHandler);
-
 app.use((req, res) => {
   res.status(404);
   res.json({ message: 'Not found' });
 });
+app.use(errorHandler);
 
 app.listen(3000);

@@ -1,3 +1,4 @@
+const { DataNotFound, ForbiddenError } = require('../middlewares/error');
 const Card = require('../models/card');
 
 const getCards = (req, res, next) => {
@@ -15,16 +16,14 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new DataNotFound())
     .then((card) => {
       if (String(card.owner) === req.user._id) {
         Card.findByIdAndRemove(req.params.cardId).then((usersCard) => {
           res.send({ data: usersCard });
-        });
+        }).catch(next);
       } else {
-        res
-          .status(403)
-          .send({ message: 'Вы не можете удалить эту карточку' });
+        throw new ForbiddenError();
       }
     })
     .catch(next);
@@ -36,7 +35,7 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new DataNotFound())
     .then((card) => res.send(card.likes))
     .catch(next);
 };
@@ -47,7 +46,7 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new Error('Not found'))
+    .orFail(() => new DataNotFound())
     .then((card) => res.send(card.likes))
     .catch(next);
 };
