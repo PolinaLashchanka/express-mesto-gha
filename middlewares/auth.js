@@ -8,6 +8,7 @@ const auth = (req, res, next) => {
     payload = jwt.verify(token, 'secret-key');
   } catch (err) {
     next(err);
+    return;
   }
 
   req.user = payload;

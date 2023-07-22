@@ -8,7 +8,7 @@ const login = (req, res, next) => {
 
   User.findOne({ email })
     .select('+password')
-    .orFail(() => new AccessError())
+    .orFail(() => new AccessError('Неверное имя пользователя или пароль'))
     .then((user) => {
       bcrypt.compare(String(password), user.password)
         .then((isValidUser) => {
@@ -21,7 +21,7 @@ const login = (req, res, next) => {
             });
             res.send({ data: user.deletePassword() });
           } else {
-            throw new AccessError();
+            throw new AccessError('Неверное имя пользователя или пароль');
           }
         })
         .catch(next);
@@ -69,7 +69,7 @@ const createUser = (req, res, next) => {
           }))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new DuplicateKeyError());
+            next(new DuplicateKeyError('Такой Email уже зарегистрирован'));
           } else {
             next(err);
           }

@@ -30,7 +30,7 @@ class ServerError extends Error {
 }
 
 class DuplicateKeyError extends Error {
-  constructor(message = 'Такой Email уже зарегистрирован') {
+  constructor(message = 'Введенный ключ не уникален') {
     super(message);
     this.statusCode = DUPLICATE_KEY_ERROR;
   }
@@ -64,7 +64,7 @@ const errorHandler = (err, req, res, next) => {
     error = err;
   } else if (err.name === 'ValidationError' || err.name === 'CastError') {
     error = new BadRequestError();
-  } else if (err.name === 'JsonWebTokenError' || err.message === 'User not found') {
+  } else if (err.name === 'JsonWebTokenError') {
     error = new AccessError();
   } else {
     error = new ServerError();
@@ -74,4 +74,6 @@ const errorHandler = (err, req, res, next) => {
   next();
 };
 
-module.exports = { errorHandler, DataNotFound, ForbiddenError, AccessError, DuplicateKeyError };
+module.exports = {
+  errorHandler, DataNotFound, ForbiddenError, AccessError, DuplicateKeyError,
+};
